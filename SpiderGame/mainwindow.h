@@ -1,9 +1,12 @@
 #pragma once
 
-#include "escenario.h"
-#include <QMouseEvent>
+#include "escena.h"
+#include "escenanivel1.h"
+#include "escenanivel2.h"
+
 #include <QKeyEvent>
 #include <QMainWindow>
+#include <QMouseEvent>
 #include <QPaintEvent>
 
 QT_BEGIN_NAMESPACE
@@ -25,7 +28,10 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
 
 private:
+    bool cambiarEscena(Escena *nuevaEscena);
+
     Ui::MainWindow *ui;
-    Escenario m_escenario;
-    int m_camaraX = 0;
-}; // MAINWINDOW_H
+    EscenaNivel1 m_nivel1;
+    EscenaNivel2 m_nivel2;
+    Escena *m_escenaActual = nullptr;
+};
