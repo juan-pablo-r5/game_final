@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/sprites">
+        <file>ciudadanos.jpg</file>
+        <file>enemigos.jpg</file>
+        <file>spider.jpg</file>
+        <file>llamas.jpg</file>
+    </qresource>
+    <qresource prefix="/sounds">
+        <file>ataque.mp3</file>
+        <file>bomb.mp3</file>
+        <file>epic.mp3</file>
+        <file>nivel1_music.mp3</file>
+    </qresource>
+</RCC>
