@@ -9,19 +9,25 @@ CONFIG += c++17
 
 SOURCES += \
     entidadbase.cpp \
+    escenabase.cpp \
+    escenanivel1.cpp \
+    escenanivel2.cpp \
     fisicas.cpp \
-    gestorniveles.cpp \
     main.cpp \
     mainwindow.cpp \
     spiderman.cpp \
+    escenario.cpp \
     spritesheet.cpp
 
 HEADERS += \
     entidadbase.h \
+    escenabase.h \
+    escenanivel1.h \
+    escenanivel2.h \
     fisicas.h \
-    gestorniveles.h \
     mainwindow.h \
     spiderman.h \
+    escenario.h \
     spritesheet.h
 
 FORMS += \

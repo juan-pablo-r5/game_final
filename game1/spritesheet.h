@@ -1,6 +1,7 @@
 #ifndef SPRITESHEET_H
 #define SPRITESHEET_H
 
+#include <QColor>
 #include <QPixmap>
 #include <QRect>
 #include <QString>
@@ -14,16 +15,20 @@ public:
 
     void configurarTamanoCuadro(unsigned int ancho, unsigned int alto);
     void recortarRegion(const QRect &region);
-    void agregarAnimacion(const QRect &filaORect, unsigned int cantidadCuadros);
+    void agregarAnimacion(const QRect &filaORect, unsigned int cantidadCuadros, unsigned int pasoX = 0);
 
-    QPixmap obtenerCuadroAnimado(unsigned int indiceAnimacion);
-    QPixmap obtenerImagenFija(const QRect &region);
+    // Convierte en transparente el fondo verde/solido de los JPG
+    void eliminarColorFondo(const QColor &colorClave = QColor(0, 255, 0), int tolerancia = 95);
+
+    QPixmap obtenerCuadroAnimado(unsigned int indiceAnimacion, bool voltearHorizontal = false);
+    QPixmap obtenerImagenFija(const QRect &region, bool voltearHorizontal = false);
 
 private:
     QPixmap *m_imagenOriginal;
     QPixmap *m_regionRecortada;
     QVector<QRect> m_animaciones;
     QVector<unsigned int> m_conteoCuadros;
+    QVector<unsigned int> m_pasosX;
     QVector<unsigned int> m_contadorActual;
 
     unsigned int m_anchoCuadro;
@@ -32,3 +37,4 @@ private:
 };
 
 #endif // SPRITESHEET_H
+
