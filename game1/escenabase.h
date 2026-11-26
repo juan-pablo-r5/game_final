@@ -37,6 +37,7 @@ public:
     int camaraX() const { return m_camaraX; }
     EstadoNivel estado() const { return m_estado; }
     int puntosGanados() const { return m_puntosGanados; }
+    void aplicarEmpujeSpider(double empujeX, double empujeY);
 
 protected:
     void avanzarSpiderYColisiones(double dt, const QSet<int> &teclasActivas);
@@ -62,6 +63,8 @@ protected:
     double m_tiempoAnimacion = 0.0;
 
     int m_camaraX = 0;
+    double m_knockbackVx = 0.0;
+    double m_knockbackVy = 0.0;
 };
 
 #endif // ESCENABASE_H

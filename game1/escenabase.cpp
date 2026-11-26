@@ -18,6 +18,8 @@ void EscenaBase::posicionarSpiderEnInicio()
     m_spiderY = inicio.y();
     m_vx = 0.0;
     m_vy = 0.0;
+    m_knockbackVx = 0.0;
+    m_knockbackVy = 0.0;
     m_enSuelo = false;
 
     if (m_escenario.mapaColision().isNull()) {
@@ -34,6 +36,12 @@ void EscenaBase::posicionarSpiderEnInicio()
     }
 }
 
+void EscenaBase::aplicarEmpujeSpider(double empujeX, double empujeY)
+{
+    m_knockbackVx = empujeX;
+    m_knockbackVy = empujeY;
+}
+
 void EscenaBase::avanzarSpiderYColisiones(double dt, const QSet<int> &teclasActivas)
 {
     if (m_escenario.mapaColision().isNull()) {
@@ -45,6 +53,7 @@ void EscenaBase::avanzarSpiderYColisiones(double dt, const QSet<int> &teclasActi
     const double impulsoSalto = -520.0;
     const double maxVelocidadCaida = 750.0;
 
+    // 1. Entrada horizontal
     double dirX = 0.0;
     if (teclasActivas.contains(Qt::Key_A) || teclasActivas.contains(Qt::Key_Left)) {
         dirX -= 1.0;
@@ -56,15 +65,21 @@ void EscenaBase::avanzarSpiderYColisiones(double dt, const QSet<int> &teclasActi
     m_intentandoMoverse = (qAbs(dirX) > 0.01);
     m_vx = dirX * velocidadHorizontal;
 
-    if ((teclasActivas.contains(Qt::Key_W) ||
-         teclasActivas.contains(Qt::Key_Up) ||
-         teclasActivas.contains(Qt::Key_Space)) && m_enSuelo) {
+    // 2. Impulso vertical de empuje o salto normal si esta en el suelo
+    if (qAbs(m_knockbackVy) > 0.01) {
+        m_vy = m_knockbackVy;
+        m_enSuelo = false;
+        m_knockbackVy = 0.0;
+    } else if ((teclasActivas.contains(Qt::Key_W) ||
+                teclasActivas.contains(Qt::Key_Up) ||
+                teclasActivas.contains(Qt::Key_Space)) && m_enSuelo) {
         m_vy = impulsoSalto;
         m_enSuelo = false;
     }
 
-    // 1. Avance horizontal en sub-pasos (maximo 2 px por paso)
-    const double desplazamientoX = m_vx * dt;
+    // 3. Avance horizontal en sub-pasos (maximo 2 px por paso), incluyendo empuje
+    const double velTotalX = m_vx + m_knockbackVx;
+    const double desplazamientoX = velTotalX * dt;
     const int pasosX = qMax(1, static_cast<int>(qCeil(qAbs(desplazamientoX) / 2.0)));
     const double pasoX = desplazamientoX / pasosX;
     const double limiteDer = static_cast<double>(qMax(0, m_escenario.ancho() - m_anchoSpider));
@@ -87,12 +102,25 @@ void EscenaBase::avanzarSpiderYColisiones(double dt, const QSet<int> &teclasActi
 
         if (golpeaPared) {
             m_vx = 0.0;
+            m_knockbackVx = 0.0;
             break;
         }
         m_spiderX = candidatoX;
     }
 
-    // 2. Gravedad y avance vertical en sub-pasos (maximo 2 px por paso)
+    // Amortiguar el empuje horizontal progresivamente
+    if (qAbs(m_knockbackVx) > 0.5) {
+        const double frenado = 900.0 * dt;
+        if (m_knockbackVx > 0.0) {
+            m_knockbackVx = qMax(0.0, m_knockbackVx - frenado);
+        } else {
+            m_knockbackVx = qMin(0.0, m_knockbackVx + frenado);
+        }
+    } else {
+        m_knockbackVx = 0.0;
+    }
+
+    // 4. Gravedad acotada y avance vertical en sub-pasos (maximo 2 px por paso)
     m_vy = qMin(maxVelocidadCaida, m_vy + gravedad * dt);
     const double desplazamientoY = m_vy * dt;
     const int pasosY = qMax(1, static_cast<int>(qCeil(qAbs(desplazamientoY) / 2.0)));
@@ -127,6 +155,8 @@ void EscenaBase::avanzarSpiderYColisiones(double dt, const QSet<int> &teclasActi
     }
 
     if (m_spiderY > m_escenario.alto()) {
+        m_knockbackVx = 0.0;
+        m_knockbackVy = 0.0;
         posicionarSpiderEnInicio();
     }
 

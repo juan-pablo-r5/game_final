@@ -4,6 +4,7 @@
         <file>enemigos.jpg</file>
         <file>spider.jpg</file>
         <file>llamas.jpg</file>
+        <file>enemigo1.png</file>
     </qresource>
     <qresource prefix="/sounds">
         <file>ataque.mp3</file>
